@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:18.4-alpine
+    container_name: postgresql
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - backend_net
+
+  cache:
+    image: redis:8.6-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    env_file:
+      - .env
+    command: redis-server --requirepass ${RDS_PASS}
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  backend_net:
